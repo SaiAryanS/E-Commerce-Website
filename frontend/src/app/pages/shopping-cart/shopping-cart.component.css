@@ -1,0 +1,30 @@
+.cart-container {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--subtle-borders);
+}
+
+.cart-item input {
+    width: 60px;
+}
+
+.cart-total {
+    margin-top: 2rem;
+    text-align: right;
+}
+
+.checkout-button {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+}

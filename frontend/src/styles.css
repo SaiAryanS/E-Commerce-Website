@@ -1,0 +1,59 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+    --primary-background: #FFFFFF;
+    --primary-text: #1A1A1A;
+    --accent-color: #007AFF;
+    --subtle-borders: #EAEAEA;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--primary-background);
+    color: var(--primary-text);
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid var(--subtle-borders);
+    border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}

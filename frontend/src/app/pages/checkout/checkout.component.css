@@ -1,0 +1,35 @@
+.checkout-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid var(--subtle-borders);
+    border-radius: 10px;
+}
+
+.checkout-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+.order-total {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.checkout-container button {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 15px;
+    font-size: 1.1rem;
+}
+
+.order-success {
+    text-align: center;
+    padding: 2rem;
+}
