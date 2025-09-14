@@ -62,9 +62,9 @@ router.post('/login', async (req, res) => {
 // ... (admin login route is unchanged) ...
 router.post('/admin/login', async (req, res) => {
     const { username, password } = req.body;
-    const { ADMIN_USERNAME, ADMIN_PASSWORD_HASH, JWT_SECRET } = process.env;
-    const isPasswordMatch = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
-    if (username === ADMIN_USERNAME && isPasswordMatch) {
+    const { ADMIN_USERNAME, ADMIN_PASSWORD, JWT_SECRET } = process.env;
+
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         const token = jwt.sign({ userId: 'admin', isAdmin: true }, JWT_SECRET, { expiresIn: '1h' });
         res.json({ token, email: 'admin' });
     } else {

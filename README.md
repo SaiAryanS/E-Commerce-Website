@@ -20,16 +20,16 @@ A minimalist website named "The Home Office Kit" that sells curated, themed boxe
 *   Shopping cart with persistent state (localStorage)
 *   Lazy-loaded admin module
 *   Minimalist design
+*   Automatic database table creation on startup.
 
 ## Setup and Installation Guide
 
 ### 1. Database Setup
 
 1.  Ensure you have MySQL installed and running on your machine.
-2.  Log in to your MySQL server and execute the script found in `backend/database.sql`. This will create the `home_office_kit_db` database, the `products` and `users` tables, and populate the `products` table with sample data.
-
-    ```bash
-    mysql -u your_username -p < backend/database.sql
+2.  Log in to your MySQL server and create the database:
+    ```sql
+    CREATE DATABASE home_office_kit_db;
     ```
 
 ### 2. Backend Setup

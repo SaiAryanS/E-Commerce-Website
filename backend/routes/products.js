@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 const router = express.Router();
 
@@ -28,12 +29,12 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST a new product (Admin only)
-router.post('/', authMiddleware, async (req, res) => {
-  const { name, description, items_included, price, image_url, slug } = req.body;
+router.post('/', [authMiddleware, adminMiddleware], async (req, res) => {
+  const { name, description, price, image_url, slug } = req.body;
   try {
     const [result] = await db.query(
-      'INSERT INTO products (name, description, items_included, price, image_url, slug) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, description, items_included, price, image_url, slug]
+      'INSERT INTO products (name, description, price, image_url, slug) VALUES (?, ?, ?, ?, ?)',
+      [name, description, price, image_url, slug]
     );
     res.status(201).json({ id: result.insertId, ...req.body });
   } catch (error) {
@@ -42,7 +43,7 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 // DELETE a product (Admin only)
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', [authMiddleware, adminMiddleware], async (req, res) => {
   try {
     const [result] = await db.query('DELETE FROM products WHERE id = ?', [req.params.id]);
     if (result.affectedRows === 0) {

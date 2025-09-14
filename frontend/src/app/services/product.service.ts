@@ -9,7 +9,6 @@ export interface Product {
   id: number;
   name: string;
   description: string;
-  items_included: string;
   price: number;
   image_url: string;
   slug: string;

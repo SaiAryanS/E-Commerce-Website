@@ -34,6 +34,7 @@ import { Observable } from 'rxjs';
           <ng-template #loggedOut>
             <a routerLink="/login">Login</a>
             <a routerLink="/register">Register</a>
+            <a routerLink="/admin/login">Admin</a>
           </ng-template>
         </div>
       </div>

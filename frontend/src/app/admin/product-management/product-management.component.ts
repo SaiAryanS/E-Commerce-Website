@@ -28,10 +28,6 @@ import { ProductService, Product } from '../../services/product.service';
               <label for="description">Description</label>
               <textarea id="description" formControlName="description"></textarea>
             </div>
-            <div class="form-group full-width">
-              <label for="items_included">Items Included (comma-separated)</label>
-              <input id="items_included" type="text" formControlName="items_included">
-            </div>
             <div class="form-group">
               <label for="price">Price</label>
               <input id="price" type="number" formControlName="price">
@@ -80,7 +76,6 @@ export class ProductManagementComponent implements OnInit {
     name: ['', Validators.required],
     slug: ['', Validators.required],
     description: ['', Validators.required],
-    items_included: ['', Validators.required],
     price: [null as number | null, [Validators.required, Validators.min(0)]],
     image_url: ['', Validators.required],
   });
@@ -116,18 +111,14 @@ export class ProductManagementComponent implements OnInit {
       return;
     }
 
-    // THE DEFINITIVE FIX: Manually creating this object guarantees its shape
-    // and satisfies TypeScript's strict checks.
     const newProductData = {
       name: this.productForm.value.name!,
       slug: this.productForm.value.slug!,
       description: this.productForm.value.description!,
-      items_included: this.productForm.value.items_included!,
       price: this.productForm.value.price!,
       image_url: this.productForm.value.image_url!,
     };
 
-    // This call will now compile without any errors.
     this.productService.addProduct(newProductData).subscribe({
       next: () => {
         alert('Product added successfully!');
