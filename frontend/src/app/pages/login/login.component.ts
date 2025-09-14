@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, UserCredentials } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -14,13 +14,22 @@ import { AuthService } from '../../services/auth.service';
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="email">Email</label>
-          <input id="email" type="email" formControlName="email">
+          <!-- THE FIX: Added name and autocomplete attributes -->
+          <input id="email" type="email" formControlName="email" name="email" autocomplete="email">
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input id="password" type="password" formControlName="password">
+          <!-- THE FIX: Added name and autocomplete attributes -->
+          <input id="password" type="password" formControlName="password" name="password" autocomplete="current-password">
         </div>
-        <button type="submit" [disabled]="loginForm.invalid">Login</button>
+        
+        <div *ngIf="loginError" class="error-message">
+          {{ loginError }}
+        </div>
+        
+        <button type="submit" [disabled]="loginForm.invalid || isLoading">
+          {{ isLoading ? 'Logging in...' : 'Login' }}
+        </button>
         <p class="auth-switch">Don't have an account? <a routerLink="/register">Register</a></p>
       </form>
     </div>
@@ -33,6 +42,9 @@ export class LoginPageComponent {
     password: ['', Validators.required]
   });
 
+  isLoading = false;
+  loginError: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -40,11 +52,22 @@ export class LoginPageComponent {
   ) {}
 
   onSubmit() {
-    if (this.loginForm.valid) {
-      this.authService.login(this.loginForm.value).subscribe({
-        next: () => this.router.navigate(['/kits']),
-        error: (err) => console.error('Login failed', err)
-      });
-    }
+    if (this.loginForm.invalid) { return; }
+    
+    this.isLoading = true;
+    this.loginError = null;
+
+    this.authService.login(this.loginForm.value as UserCredentials).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/kits']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.loginError = 'Invalid email or password. Please try again.';
+        console.error('Login failed', err);
+      }
+    });
   }
 }
+

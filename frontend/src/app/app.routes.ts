@@ -7,17 +7,50 @@ import { RegisterPageComponent } from './pages/register/register.component';
 import { ShoppingCartComponent } from './pages/shopping-cart/shopping-cart.component';
 import { CheckoutPageComponent } from './pages/checkout/checkout.component';
 
+// 1. IMPORT ALL THE NECESSARY COMPONENTS
+import { authGuard } from './guards/auth.guard';
+import { OrderConfirmationPageComponent } from './pages/order-confirmation/order-confirmation.component';
+import { OrderHistoryPageComponent } from './pages/order-history/order-history.component'; // <-- Add this import
+
 export const appRoutes: Routes = [
+    // --- Public Routes ---
     { path: '', component: HomePageComponent },
     { path: 'kits', component: ProductListPageComponent },
     { path: 'kit/:slug', component: ProductDetailsPageComponent },
     { path: 'login', component: LoginPageComponent },
     { path: 'register', component: RegisterPageComponent },
-    { path: 'cart', component: ShoppingCartComponent },
-    { path: 'checkout', component: CheckoutPageComponent },
+
+    // --- Protected Routes (require login) ---
+    { 
+        path: 'cart', 
+        component: ShoppingCartComponent,
+        canActivate: [authGuard]
+    },
+    { 
+        path: 'checkout', 
+        component: CheckoutPageComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'order-confirmation/:id',
+        component: OrderConfirmationPageComponent,
+        canActivate: [authGuard]
+    },
+    // 2. ADD THE NEW ROUTE FOR THE ORDER HISTORY PAGE
+    // It must also be protected by the authGuard.
+    {
+        path: 'my-orders',
+        component: OrderHistoryPageComponent,
+        canActivate: [authGuard]
+    },
+
+    // --- Admin Module ---
     {
         path: 'admin',
         loadChildren: () => import('./admin/admin.routes').then(m => m.ADMIN_ROUTES)
     },
+    
+    // --- Wildcard Route ---
     { path: '**', redirectTo: '' }
 ];
+

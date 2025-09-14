@@ -1,24 +1,26 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Authentication invalid.' });
-  }
-
-  const token = authHeader.split(' ')[1];
+  const authHeader = req.header('Authorization');
+  if (!authHeader) { return res.status(401).json({ message: 'No token, authorization denied.' }); }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    if (!payload.isAdmin) {
-        return res.status(403).json({ message: 'Admin access required.' });
-    }
-    req.user = { userId: payload.userId, isAdmin: payload.isAdmin };
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: 'Authentication invalid.' });
+    const token = authHeader.split(' ')[1];
+    if (!token) { return res.status(401).json({ message: 'Token format is invalid.' }); }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // --- DEBUG STEP 2 ---
+    console.log('--- Step 2: Verifying Token in Middleware ---');
+    console.log('Payload coming OUT of token:', decoded);
+    // --------------------
+
+    req.user = decoded;
+    next(); 
+  } catch (err) {
+    res.status(401).json({ message: 'Token is not valid.' });
   }
 };
 
 module.exports = authMiddleware;
+

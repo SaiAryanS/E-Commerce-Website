@@ -1,49 +1,102 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../../services/cart.service';
-import { Router } from '@angular/router';
-import { map } from 'rxjs';
+import { Router, RouterModule } from '@angular/router';
+import { Observable, take } from 'rxjs';
+import { CartService, CartItem } from '../../services/cart.service';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <div class="checkout-container">
-      <h2>Order Summary</h2>
-      <div *ngIf="!(orderPlaced)">
-        <div class="order-item" *ngFor="let item of cartItems$ | async">
-          <span>{{ item.name }} (x{{ item.quantity }})</span>
-          <span>{{ (item.price * item.quantity) | currency }}</span>
+      <h2>Checkout Summary</h2>
+      <div *ngIf="(cartItems$ | async) as items">
+        <div *ngIf="items.length === 0; else summaryContent" class="empty-summary">
+          <p>Your cart is empty. Nothing to check out.</p>
+          <a routerLink="/kits" class="button">Go Shopping</a>
         </div>
-        <hr>
-        <div class="order-total">
-          <h3>Total: {{ cartTotal$ | async | currency }}</h3>
-        </div>
-        <button (click)="placeOrder()">Place Order</button>
-      </div>
-      <div *ngIf="orderPlaced" class="order-success">
-        <h3>Thank you for your order!</h3>
-        <p>Your order has been placed successfully.</p>
+        
+        <ng-template #summaryContent>
+          <!-- List of items in the cart -->
+          <div class="summary-item" *ngFor="let item of items">
+            <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+            <span>{{ (item.product.price * item.quantity) | currency:'USD' }}</span>
+          </div>
+          <hr>
+          <!-- Total price -->
+          <div class="summary-total">
+            <strong>Total:</strong>
+            <strong>{{ (totalPrice$ | async) | currency:'USD' }}</strong>
+          </div>
+          
+          <!-- Place Order Button with loading state -->
+          <button (click)="placeOrder()" [disabled]="isPlacingOrder" class="button place-order-btn">
+            {{ isPlacingOrder ? 'Placing Order...' : 'Place Order' }}
+          </button>
+          
+          <!-- Error message display -->
+          <p *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </p>
+        </ng-template>
       </div>
     </div>
   `,
   styleUrls: ['./checkout.component.css']
 })
 export class CheckoutPageComponent {
-  cartItems$ = this.cartService.cartItems$;
-  cartTotal$ = this.cartService.cartItems$.pipe(
-    map(items => items.reduce((acc, item) => acc + (item.price * item.quantity), 0))
-  );
-  orderPlaced = false;
+  cartItems$: Observable<CartItem[]>;
+  totalPrice$: Observable<number>;
+  isPlacingOrder = false;
+  errorMessage: string | null = null;
 
-  constructor(private cartService: CartService, private router: Router) {}
+  constructor(
+    private cartService: CartService,
+    private orderService: OrderService,
+    private router: Router
+  ) {
+    this.cartItems$ = this.cartService.cartItems$;
+    this.totalPrice$ = this.cartService.totalPrice$;
+  }
 
-  placeOrder() {
-    this.cartService.clearCart();
-    this.orderPlaced = true;
-    setTimeout(() => {
-        this.router.navigate(['/']);
-    }, 3000);
+  placeOrder(): void {
+    this.isPlacingOrder = true;
+    this.errorMessage = null;
+
+    this.cartItems$.pipe(take(1)).subscribe({
+      next: (items) => {
+        if (items.length === 0) {
+          this.errorMessage = 'Your cart is empty.';
+          this.isPlacingOrder = false;
+          return;
+        }
+
+        this.orderService.placeOrder(items).subscribe({
+          next: (response) => {
+            console.log('Order placed successfully!', response);
+            
+            // --- THIS IS THE CHANGE ---
+            // 1. REMOVE the old alert box:
+            // alert('Thank you for your order! It has been placed successfully.');
+            
+            this.cartService.clearCart(); 
+
+            // 2. REDIRECT to the new confirmation page with the orderId from the backend.
+            this.router.navigate(['/order-confirmation', response.orderId]);
+            // -------------------------
+
+            this.isPlacingOrder = false;
+          },
+          error: (err) => {
+            console.error('Failed to place order', err);
+            this.errorMessage = 'There was a problem placing your order. Please try again.';
+            this.isPlacingOrder = false;
+          }
+        });
+      }
+    });
   }
 }
+

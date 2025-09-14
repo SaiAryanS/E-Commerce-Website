@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../../services/cart.service';
 import { RouterModule } from '@angular/router';
-import { map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { CartService, CartItem } from '../../services/cart.service';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -10,40 +10,55 @@ import { map } from 'rxjs';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="cart-container">
-      <h2>Your Cart</h2>
-      <div *ngIf="(cartItems$ | async)?.length; else emptyCart">
-        <div class="cart-item" *ngFor="let item of cartItems$ | async">
-          <span>{{ item.name }}</span>
-          <input type="number" [value]="item.quantity" (change)="updateQuantity(item.id, $event)" min="1">
-          <span>{{ (item.price * item.quantity) | currency }}</span>
-          <button (click)="removeFromCart(item.id)">Remove</button>
+      <h2>Your Shopping Cart</h2>
+      <div *ngIf="(cartItems$ | async) as items">
+        <div *ngIf="items.length === 0; else cartContent" class="empty-cart">
+          <p>Your cart is empty.</p>
+          <a routerLink="/kits" class="button">Continue Shopping</a>
         </div>
-        <div class="cart-total">
-          <h3>Total: {{ cartTotal$ | async | currency }}</h3>
-          <a routerLink="/checkout" class="checkout-button">Proceed to Checkout</a>
-        </div>
+
+        <ng-template #cartContent>
+          <div class="cart-item" *ngFor="let item of items">
+            <img [src]="item.product.image_url" [alt]="item.product.name" class="item-image">
+            <div class="item-details">
+              <!-- THE FIX: Access product properties via item.product -->
+              <span>{{ item.product.name }}</span>
+              <input 
+                type="number" 
+                [value]="item.quantity" 
+                (change)="updateQuantity(item.product.id, $event)" 
+                min="1"
+                class="quantity-input"
+              >
+              <span>{{ (item.product.price * item.quantity) | currency:'USD' }}</span>
+              <button class="remove-btn" (click)="removeFromCart(item.product.id)">Remove</button>
+            </div>
+          </div>
+          <div class="cart-summary">
+            <h3>Total: {{ (totalPrice$ | async) | currency:'USD' }}</h3>
+            <a routerLink="/checkout" class="button checkout-btn">Proceed to Checkout</a>
+          </div>
+        </ng-template>
       </div>
-      <ng-template #emptyCart>
-        <p>Your cart is empty.</p>
-      </ng-template>
     </div>
   `,
   styleUrls: ['./shopping-cart.component.css']
 })
 export class ShoppingCartComponent {
-  cartItems$ = this.cartService.cartItems$;
-  cartTotal$ = this.cartService.cartItems$.pipe(
-    map(items => items.reduce((acc, item) => acc + (item.price * item.quantity), 0))
-  );
+  cartItems$: Observable<CartItem[]>;
+  totalPrice$: Observable<number>;
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService) {
+    this.cartItems$ = this.cartService.cartItems$;
+    this.totalPrice$ = this.cartService.totalPrice$;
+  }
 
-  updateQuantity(id: number, event: any) {
+  updateQuantity(id: number, event: any): void {
     const quantity = parseInt((event.target as HTMLInputElement).value, 10);
     this.cartService.updateQuantity(id, quantity);
   }
 
-  removeFromCart(id: number) {
+  removeFromCart(id: number): void {
     this.cartService.removeFromCart(id);
   }
 }

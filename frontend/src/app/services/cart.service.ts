@@ -1,62 +1,73 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
+import { Product } from './product.service';
+
+// Defines the structure of an item in the cart
+export interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private _cartItems = new BehaviorSubject<any[]>([]);
+  // A BehaviorSubject holds the current list of cart items.
+  // Components can subscribe to this to get real-time updates.
+  private _cartItems = new BehaviorSubject<CartItem[]>([]);
   cartItems$ = this._cartItems.asObservable();
 
+  // An observable for the total number of items in the cart
+  itemCount$: Observable<number> = this.cartItems$.pipe(
+    map(items => items.reduce((sum, item) => sum + item.quantity, 0))
+  );
+
+  // An observable for the total price of all items in the cart
+  totalPrice$: Observable<number> = this.cartItems$.pipe(
+    map(items => items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0))
+  );
+
   constructor() {
-    const cart = localStorage.getItem('cart');
-    if (cart) {
-      this._cartItems.next(JSON.parse(cart));
-    }
+    // Optional: Load cart from localStorage if you want it to persist
   }
 
-  private persistCart(items: any[]) {
-    localStorage.setItem('cart', JSON.stringify(items));
-    this._cartItems.next(items);
-  }
-
-  addToCart(product: any) {
-    const currentItems = this._cartItems.value;
-    const existingItem = currentItems.find(item => item.id === product.id);
+  // Adds a product to the cart or increments its quantity
+  addToCart(product: Product): void {
+    const currentItems = this._cartItems.getValue();
+    const existingItem = currentItems.find(item => item.product.id === product.id);
 
     if (existingItem) {
       existingItem.quantity++;
     } else {
-      currentItems.push({ ...product, quantity: 1 });
+      currentItems.push({ product: product, quantity: 1 });
     }
-    this.persistCart(currentItems);
+    this._cartItems.next([...currentItems]); // Emit a new array to trigger change detection
   }
 
-  updateQuantity(productId: number, quantity: number) {
-    const currentItems = this._cartItems.value;
-    const item = currentItems.find(item => item.id === productId);
+  // Removes an item completely from the cart
+  removeFromCart(productId: number): void {
+    const currentItems = this._cartItems.getValue();
+    const updatedItems = currentItems.filter(item => item.product.id !== productId);
+    this._cartItems.next(updatedItems);
+  }
 
-    if (item) {
-      item.quantity = quantity;
-      if (item.quantity <= 0) {
-        this.removeFromCart(productId);
-      } else {
-        this.persistCart(currentItems);
-      }
+  // Updates the quantity of a specific item
+  updateQuantity(productId: number, newQuantity: number): void {
+    if (newQuantity < 1) {
+      this.removeFromCart(productId);
+      return;
     }
+    const currentItems = this._cartItems.getValue();
+    const itemToUpdate = currentItems.find(item => item.product.id === productId);
+    if (itemToUpdate) {
+      itemToUpdate.quantity = newQuantity;
+    }
+    this._cartItems.next([...currentItems]);
   }
 
-  removeFromCart(productId: number) {
-    let currentItems = this._cartItems.value;
-    currentItems = currentItems.filter(item => item.id !== productId);
-    this.persistCart(currentItems);
-  }
-
-  clearCart() {
-    this.persistCart([]);
-  }
-
-  getCartTotal() {
-    return this._cartItems.value.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  // Empties the entire cart
+  clearCart(): void {
+    this._cartItems.next([]);
   }
 }
+
