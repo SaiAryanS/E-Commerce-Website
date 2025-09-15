@@ -14,37 +14,35 @@ import { Observable } from 'rxjs';
       <div class="navbar-container">
         <a class="navbar-brand" routerLink="/">The Home Office Kit</a>
         
-        <!-- Hamburger Menu Button -->
-        <button class="hamburger" (click)="toggleMenu()" [class.is-active]="isMenuOpen">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+        <div class="navbar-right">
+          <a class="cart-icon" routerLink="/cart">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 22C20.5523 22 21 21.5523 21 21C21 20.4477 20.5523 20 20 20C19.4477 20 19 20.4477 19 21C19 21.5523 19.4477 22 20 22Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M1 1H5L7.68 14.39C7.77143 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H18.4C18.8693 16.009 19.3268 15.8526 19.6925 15.5583C20.0581 15.264 20.3086 14.8504 20.4 14.39L23 6H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <ng-container *ngIf="itemCount$ | async as itemCount">
+              <span class="cart-count" *ngIf="itemCount > 0">{{ itemCount }}</span>
+            </ng-container>
+          </a>
+
+          <!-- Hamburger Menu Button -->
+          <button class="hamburger" (click)="toggleMenu()" [class.is-active]="isMenuOpen">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
 
         <!-- Desktop Links -->
         <div class="navbar-links">
-          <a routerLink="/kits">Kits</a>
-          <ng-container *ngIf="(isLoggedIn$ | async); else loggedOutDesktop">
-            <a routerLink="/my-orders">My Orders</a>
-            <a (click)="logout()" class="logout-link">Logout</a>
-            <a routerLink="/cart" class="cart-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-              <span class="cart-count" *ngIf="(itemCount$ | async) as count">
-                <ng-container *ngIf="count > 0">{{ count }}</ng-container>
-              </span>
-            </a>
-          </ng-container>
-          <ng-template #loggedOutDesktop>
-            <a routerLink="/login">Login</a>
-            <a routerLink="/register">Register</a>
-            <a routerLink="/admin/login">Admin</a>
-          </ng-template>
         </div>
 
       </div>
       
       <!-- Mobile Menu -->
       <div class="mobile-menu" [class.is-active]="isMenuOpen">
+        <a routerLink="/" (click)="closeMenu()">Home</a>
         <a routerLink="/kits" (click)="closeMenu()">Kits</a>
         <ng-container *ngIf="(isLoggedIn$ | async); else loggedOutMobile">
           <a routerLink="/my-orders" (click)="closeMenu()">My Orders</a>
@@ -53,7 +51,7 @@ import { Observable } from 'rxjs';
         <ng-template #loggedOutMobile>
           <a routerLink="/login" (click)="closeMenu()">Login</a>
           <a routerLink="/register" (click)="closeMenu()">Register</a>
-          <a routerLink="/admin/login" (click)="closeMenu()">Admin</a>
+          <a routerLink="/admin/login" (click)="closeMenu()">Admin Login</a>
         </ng-template>
       </div>
     </nav>
