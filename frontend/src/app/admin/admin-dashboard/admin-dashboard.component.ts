@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
             <nav>
                 <a routerLink="/admin/dashboard/products" routerLinkActive="active">Product Management</a>
             </nav>
-            <button (click)="logout()">Logout</button>
+            <button class="btn-secondary" (click)="logout()">Logout</button>
         </aside>
         <main class="dashboard-content">
             <router-outlet></router-outlet>

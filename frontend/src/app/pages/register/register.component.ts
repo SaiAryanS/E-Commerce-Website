@@ -42,7 +42,7 @@ export const passwordsMatchValidator: ValidatorFn = (control: AbstractControl): 
         <div *ngIf="registerError" class="error-message">{{ registerError }}</div>
         <div *ngIf="registerSuccess" class="success-message">{{ registerSuccess }}</div>
 
-        <button type="submit" [disabled]="registerForm.invalid || isLoading">
+        <button class="btn-primary" type="submit" [disabled]="registerForm.invalid || isLoading">
           {{ isLoading ? 'Registering...' : 'Register' }}
         </button>
         <p class="auth-switch">Already have an account? <a routerLink="/login">Login</a></p>

@@ -27,7 +27,7 @@ import { AuthService, UserCredentials } from '../../services/auth.service';
           {{ loginError }}
         </div>
         
-        <button type="submit" [disabled]="loginForm.invalid || isLoading">
+        <button class="btn-primary" type="submit" [disabled]="loginForm.invalid || isLoading">
           {{ isLoading ? 'Logging in...' : 'Login' }}
         </button>
         <p class="auth-switch">Don't have an account? <a routerLink="/register">Register</a></p>

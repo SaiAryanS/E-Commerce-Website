@@ -8,9 +8,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="confirmation-container">
-      <div class="confirmation-card">
+      <div class="card confirmation-card">
         <div class="icon-container">
-          <!-- Green checkmark icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="success-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -20,7 +19,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
         <div *ngIf="orderId" class="order-id-box">
           Your Order ID is: <strong>#{{ orderId }}</strong>
         </div>
-        <a routerLink="/kits" class="button">Continue Shopping</a>
+        <a routerLink="/kits" class="btn-primary">Continue Shopping</a>
       </div>
     </div>
   `,
@@ -33,11 +32,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
       text-align: center;
     }
     .confirmation-card {
-      background-color: #ffffff;
       padding: 3rem;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
+      max-width: 550px;
     }
     .icon-container {
       margin-bottom: 1.5rem;
@@ -45,7 +41,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
     .success-icon {
       width: 6rem;
       height: 6rem;
-      color: #28a745; /* A nice green color */
+      color: var(--primary-accent);
     }
     h1 {
       font-size: 2.25rem;
@@ -54,29 +50,16 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
     }
     .subtitle {
       font-size: 1.1rem;
-      color: #6c757d;
+      color: #a0a0a0;
       margin-bottom: 2rem;
     }
     .order-id-box {
-      background-color: #f8f9fa;
-      border: 1px solid #dee2e6;
+      background-color: #2a2a2a;
+      border: 1px solid var(--subtle-borders);
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 2rem;
       font-size: 1rem;
-    }
-    .button {
-      display: inline-block;
-      background-color: #007bff;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background-color 0.2s ease-in-out;
-    }
-    .button:hover {
-      background-color: #0056b3;
     }
   `]
 })
@@ -86,7 +69,6 @@ export class OrderConfirmationPageComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    // This gets the order ID from the URL (e.g., /order-confirmation/123)
     this.orderId = this.route.snapshot.paramMap.get('id');
   }
 }

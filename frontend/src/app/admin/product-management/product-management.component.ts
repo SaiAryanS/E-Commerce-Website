@@ -12,7 +12,7 @@ import { ProductService, Product } from '../../services/product.service';
       <h2>Product Management</h2>
 
       <!-- Form for Adding a New Product -->
-      <div class="form-card">
+      <div class="card form-card">
         <h3>Add New Product</h3>
         <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
           <div class="form-grid">
@@ -26,7 +26,7 @@ import { ProductService, Product } from '../../services/product.service';
             </div>
             <div class="form-group full-width">
               <label for="description">Description</label>
-              <textarea id="description" formControlName="description"></textarea>
+              <textarea id="description" formControlName="description" rows="4"></textarea>
             </div>
             <div class="form-group">
               <label for="price">Price</label>
@@ -36,13 +36,17 @@ import { ProductService, Product } from '../../services/product.service';
               <label for="image_url">Image URL (e.g., /assets/images/kit.jpg)</label>
               <input id="image_url" type="text" formControlName="image_url">
             </div>
+             <div class="form-group full-width">
+                <label for="items_included">Items Included (comma-separated)</label>
+                <input id="items_included" type="text" formControlName="items_included">
+            </div>
           </div>
-          <button type="submit" [disabled]="productForm.invalid">Add Product</button>
+          <button class="btn-primary" type="submit" [disabled]="productForm.invalid">Add Product</button>
         </form>
       </div>
 
       <!-- List of Existing Products -->
-      <div class="list-card">
+      <div class="card list-card">
         <h3>Existing Products</h3>
         <div *ngIf="isLoading">Loading products...</div>
         <div *ngIf="!isLoading && products.length === 0">No products found.</div>
@@ -60,8 +64,8 @@ import { ProductService, Product } from '../../services/product.service';
               <td>{{ product.id }}</td>
               <td>{{ product.name }}</td>
               <td>{{ product.price | currency:'USD' }}</td>
-              <td>
-                <button class="delete-btn" (click)="deleteProduct(product.id)">Delete</button>
+              <td class="actions-cell">
+                <button class="btn-secondary" (click)="deleteProduct(product.id)">Delete</button>
               </td>
             </tr>
           </tbody>

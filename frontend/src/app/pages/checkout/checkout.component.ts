@@ -10,21 +10,23 @@ import { OrderService } from '../../services/order.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="checkout-container">
+    <div class="card checkout-container">
       <h2>Checkout Summary</h2>
       <div *ngIf="(cartItems$ | async) as items">
         <div *ngIf="items.length === 0; else summaryContent" class="empty-summary">
           <p>Your cart is empty. Nothing to check out.</p>
-          <a routerLink="/kits" class="button">Go Shopping</a>
+          <a routerLink="/kits" class="btn-primary">Go Shopping</a>
         </div>
         
         <ng-template #summaryContent>
           <!-- List of items in the cart -->
-          <div class="summary-item" *ngFor="let item of items">
-            <span>{{ item.product.name }} (x{{ item.quantity }})</span>
-            <span>{{ (item.product.price * item.quantity) | currency:'USD' }}</span>
+          <div class="summary-items-list">
+            <div class="summary-item" *ngFor="let item of items">
+              <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+              <span>{{ (item.product.price * item.quantity) | currency:'USD' }}</span>
+            </div>
           </div>
-          <hr>
+          
           <!-- Total price -->
           <div class="summary-total">
             <strong>Total:</strong>
@@ -32,7 +34,7 @@ import { OrderService } from '../../services/order.service';
           </div>
           
           <!-- Place Order Button with loading state -->
-          <button (click)="placeOrder()" [disabled]="isPlacingOrder" class="button place-order-btn">
+          <button (click)="placeOrder()" [disabled]="isPlacingOrder" class="btn-primary place-order-btn">
             {{ isPlacingOrder ? 'Placing Order...' : 'Place Order' }}
           </button>
           
