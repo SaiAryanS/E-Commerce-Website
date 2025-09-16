@@ -2,6 +2,34 @@
 
 This is a complete, functional, 3-tier e-commerce web application built with Angular, Express.js, and MySQL.
 
+## Running with Docker (Recommended)
+
+With Docker and Docker Compose, you can run the entire application with a single command.
+
+1.  **Prerequisites:**
+    *   [Docker](https://docs.docker.com/get-docker/) installed.
+    *   [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+2.  **Run the Application:**
+    *   You can use the `.env` file in the `backend` directory to configure your application. If you don't, the application will use default values.
+    *   Open a terminal in the project root directory (the one containing the `docker-compose.yml` file).
+    *   Run the following command:
+        ```bash
+        docker-compose up -d --build
+        ```
+    *   This will build the images for the frontend and backend, start the containers, and set up the database.
+
+3.  **Access the Application:**
+    *   **Website:** Open your browser and navigate to `http://localhost`.
+    *   **Backend API:** The API is available at `http://localhost:3000`.
+    *   **Database:** The MySQL database is exposed on port `3307`.
+
+4.  **Stopping the Application:**
+    *   To stop the running containers, execute:
+        ```bash
+        docker-compose down
+        ```
+
 ## Project Concept
 
 A minimalist website named "The Home Office Kit" that sells curated, themed boxes for home office setups. The application includes user registration/login, a working shopping cart, and a secure admin panel for product management.
