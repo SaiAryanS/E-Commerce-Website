@@ -19,7 +19,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
         <div *ngIf="orderId" class="order-id-box">
           Your Order ID is: <strong>#{{ orderId }}</strong>
         </div>
-        <a routerLink="/kits" class="btn-primary">Continue Shopping</a>
+        <a routerLink="/products" class="btn-primary">Continue Shopping</a>
       </div>
     </div>
   `,
@@ -69,6 +69,6 @@ export class OrderConfirmationPageComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.orderId = this.route.snapshot.paramMap.get('id');
+    this.orderId = this.route.snapshot.paramMap.get('publicOrderId');
   }
 }

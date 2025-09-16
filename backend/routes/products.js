@@ -5,10 +5,20 @@ const adminMiddleware = require('../middleware/adminMiddleware');
 
 const router = express.Router();
 
-// GET all products
+// GET all products, with optional category filtering
 router.get('/', async (req, res) => {
+  const { category } = req.query; // e.g., /api/products?category=CPU
+
   try {
-    const [products] = await db.query('SELECT * FROM products');
+    let query = 'SELECT * FROM products';
+    const params = [];
+
+    if (category) {
+      query += ' WHERE category = ?';
+      params.push(category);
+    }
+
+    const [products] = await db.query(query, params);
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch products.' });
@@ -30,11 +40,11 @@ router.get('/:id', async (req, res) => {
 
 // POST a new product (Admin only)
 router.post('/', [authMiddleware, adminMiddleware], async (req, res) => {
-  const { name, description, price, image_url, slug } = req.body;
+  const { name, description, price, image_url, slug, category } = req.body;
   try {
     const [result] = await db.query(
-      'INSERT INTO products (name, description, price, image_url, slug) VALUES (?, ?, ?, ?, ?)',
-      [name, description, price, image_url, slug]
+      'INSERT INTO products (name, description, price, image_url, slug, category) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, description, price, image_url, slug, category]
     );
     res.status(201).json({ id: result.insertId, ...req.body });
   } catch (error) {

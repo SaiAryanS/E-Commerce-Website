@@ -15,8 +15,9 @@ import { OrderHistoryPageComponent } from './pages/order-history/order-history.c
 export const appRoutes: Routes = [
     // --- Public Routes ---
     { path: '', component: HomePageComponent },
-    { path: 'kits', component: ProductListPageComponent },
-    { path: 'kit/:slug', component: ProductDetailsPageComponent },
+    { path: 'products', component: ProductListPageComponent },
+    { path: 'products/category/:category', component: ProductListPageComponent },
+    { path: 'product/:slug', component: ProductDetailsPageComponent },
     { path: 'login', component: LoginPageComponent },
     { path: 'register', component: RegisterPageComponent },
 
@@ -32,7 +33,7 @@ export const appRoutes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'order-confirmation/:id',
+        path: 'order-confirmation/:publicOrderId',
         component: OrderConfirmationPageComponent,
         canActivate: [authGuard]
     },

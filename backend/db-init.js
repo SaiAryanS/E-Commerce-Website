@@ -14,13 +14,15 @@ const createTables = async () => {
       description TEXT,
       price DECIMAL(10, 2) NOT NULL,
       image_url VARCHAR(255),
-      slug VARCHAR(255) NOT NULL UNIQUE
+      slug VARCHAR(255) NOT NULL UNIQUE,
+      category VARCHAR(255) NOT NULL
     );`,
     `CREATE TABLE IF NOT EXISTS orders (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
       order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       total_amount DECIMAL(10, 2) NOT NULL,
+      public_order_id VARCHAR(255) UNIQUE NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );`,
     `CREATE TABLE IF NOT EXISTS order_items (

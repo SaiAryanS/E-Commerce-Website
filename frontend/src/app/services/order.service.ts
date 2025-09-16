@@ -16,6 +16,7 @@ export interface OrderItem {
 // This defines what a single order in the history looks like.
 export interface Order {
   id: number;
+  public_order_id: string;
   created_at: string; // This will be a date string from the database
   total_amount: number;
   items: OrderItem[]; // Each order contains an array of items
@@ -42,6 +43,14 @@ export class OrderService {
     });
     // Makes a GET request to /api/orders
     return this.http.get<Order[]>(this.apiUrl, { headers: headers });
+  }
+
+  getOrder(publicOrderId: string): Observable<Order> {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Order>(`${this.apiUrl}/${publicOrderId}`, { headers: headers });
   }
 
   /**

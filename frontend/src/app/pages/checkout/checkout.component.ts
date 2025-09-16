@@ -86,7 +86,7 @@ export class CheckoutPageComponent {
             this.cartService.clearCart(); 
 
             // 2. REDIRECT to the new confirmation page with the orderId from the backend.
-            this.router.navigate(['/order-confirmation', response.orderId]);
+            this.router.navigate(['/order-confirmation', response.publicOrderId]);
             // -------------------------
 
             this.isPlacingOrder = false;

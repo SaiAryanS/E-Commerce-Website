@@ -4,7 +4,7 @@ services:
     container_name: mysql_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_NAME:-home_office_kit_db}
+      MYSQL_DATABASE: ${DB_NAME:-pc_parts}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
     ports:
       - "3307:3306"
@@ -32,7 +32,7 @@ services:
       DB_HOST: db
       DB_USER: ${DB_USER:-root}
       DB_PASSWORD: ${DB_PASSWORD:-root}
-      DB_NAME: ${DB_NAME:-home_office_kit_db}
+      DB_NAME: ${DB_NAME:-pc_parts}
       JWT_SECRET: ${JWT_SECRET:-aBcDeFgHiJkLmNoPqRsTuVwXyZ123456!@#$%%^}
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-root}

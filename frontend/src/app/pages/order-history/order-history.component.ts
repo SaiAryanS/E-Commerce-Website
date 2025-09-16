@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
 
       <div *ngIf="!isLoading && orders.length === 0" class="empty-state">
         <p>You haven't placed any orders yet.</p>
-        <a routerLink="/kits" class="btn-primary">Start Shopping</a>
+        <a routerLink="/products" class="btn-primary">Start Shopping</a>
       </div>
 
       <div *ngIf="!isLoading && orders.length > 0" class="orders-list">
@@ -26,7 +26,7 @@ import { RouterModule } from '@angular/router';
           <div class="order-summary">
             <div>
               <span class="label">Order ID:</span>
-              <span class="value">#{{ order.id }}</span>
+              <span class="value">#{{ order.public_order_id }}</span>
             </div>
             <div>
               <span class="label">Date:</span>

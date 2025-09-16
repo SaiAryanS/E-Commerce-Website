@@ -17,6 +17,10 @@ With Docker and Docker Compose, you can run the entire application with a single
         ```bash
         docker-compose up -d --build
         ```
+
+    *   **Important First-Time Setup:** The database starts empty. You must first go to the website and **Register** a new user account before you can log in or place orders.
+
+3.  **Access the Application:**
     *   This will build the images for the frontend and backend, start the containers, and set up the database.
 
 3.  **Access the Application:**
@@ -57,7 +61,7 @@ A minimalist website named "The Home Office Kit" that sells curated, themed boxe
 1.  Ensure you have MySQL installed and running on your machine.
 2.  Log in to your MySQL server and create the database:
     ```sql
-    CREATE DATABASE home_office_kit_db;
+    CREATE DATABASE pc_parts;
     ```
 
 ### 2. Backend Setup
@@ -75,7 +79,7 @@ A minimalist website named "The Home Office Kit" that sells curated, themed boxe
     DB_HOST=localhost
     DB_USER=your_mysql_username
     DB_PASSWORD=your_mysql_password
-    DB_NAME=home_office_kit_db
+    DB_NAME=pc_parts
 
     JWT_SECRET=a_very_strong_and_secret_key
 
@@ -126,4 +130,6 @@ A minimalist website named "The Home Office Kit" that sells curated, themed boxe
 *These routes require a valid admin JWT in the `Authorization` header (`Bearer <token>`).*
 
 *   `POST /api/products`: Add a new product to the database.
+*   `DELETE /api/products/:id`: Remove a product from the database.
+ a new product to the database.
 *   `DELETE /api/products/:id`: Remove a product from the database.

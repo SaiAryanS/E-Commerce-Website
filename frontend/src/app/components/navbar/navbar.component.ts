@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
   template: `
     <nav class="navbar">
       <div class="navbar-container">
-        <a class="navbar-brand" routerLink="/">The Home Office Kit</a>
+        <a class="navbar-brand" routerLink="/">PC Parts</a>
         
         <div class="navbar-right">
           <a class="cart-icon" routerLink="/cart">
@@ -43,7 +43,6 @@ import { Observable } from 'rxjs';
       <!-- Mobile Menu -->
       <div class="mobile-menu" [class.is-active]="isMenuOpen">
         <a routerLink="/" (click)="closeMenu()">Home</a>
-        <a routerLink="/kits" (click)="closeMenu()">Kits</a>
         <ng-container *ngIf="(isLoggedIn$ | async); else loggedOutMobile">
           <a routerLink="/my-orders" (click)="closeMenu()">My Orders</a>
           <a (click)="logout()">Logout</a>

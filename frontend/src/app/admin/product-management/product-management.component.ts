@@ -21,7 +21,7 @@ import { ProductService, Product } from '../../services/product.service';
               <input id="name" type="text" formControlName="name">
             </div>
             <div class="form-group">
-              <label for="slug">Slug (e.g., starter-kit)</label>
+              <label for="slug">Slug (e.g., cpu-i9)</label>
               <input id="slug" type="text" formControlName="slug">
             </div>
             <div class="form-group full-width">
@@ -33,12 +33,15 @@ import { ProductService, Product } from '../../services/product.service';
               <input id="price" type="number" formControlName="price">
             </div>
             <div class="form-group">
-              <label for="image_url">Image URL (e.g., /assets/images/kit.jpg)</label>
+              <label for="image_url">Image URL (e.g., /assets/images/cpu.jpg)</label>
               <input id="image_url" type="text" formControlName="image_url">
             </div>
-             <div class="form-group full-width">
-                <label for="items_included">Items Included (comma-separated)</label>
-                <input id="items_included" type="text" formControlName="items_included">
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" formControlName="category">
+                <option value="" disabled>Choose a category</option>
+                <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+              </select>
             </div>
           </div>
           <button class="btn-primary" type="submit" [disabled]="productForm.invalid">Add Product</button>
@@ -55,6 +58,7 @@ import { ProductService, Product } from '../../services/product.service';
             <tr>
               <th>ID</th>
               <th>Name</th>
+              <th>Category</th>
               <th>Price</th>
               <th>Actions</th>
             </tr>
@@ -63,6 +67,7 @@ import { ProductService, Product } from '../../services/product.service';
             <tr *ngFor="let product of products">
               <td>{{ product.id }}</td>
               <td>{{ product.name }}</td>
+              <td>{{ product.category }}</td>
               <td>{{ product.price | currency:'USD' }}</td>
               <td class="actions-cell">
                 <button class="btn-secondary" (click)="deleteProduct(product.id)">Delete</button>
@@ -76,12 +81,15 @@ import { ProductService, Product } from '../../services/product.service';
   styleUrls: ['./product-management.component.css']
 })
 export class ProductManagementComponent implements OnInit {
+  categories = ['CPU', 'Motherboard', 'RAM', 'Graphic Card', 'Storage', 'Power Supply', 'Cabinet'];
+
   productForm = this.fb.group({
     name: ['', Validators.required],
     slug: ['', Validators.required],
     description: ['', Validators.required],
     price: [null as number | null, [Validators.required, Validators.min(0)]],
     image_url: ['', Validators.required],
+    category: ['', Validators.required]
   });
 
   products: Product[] = [];
@@ -121,9 +129,10 @@ export class ProductManagementComponent implements OnInit {
       description: this.productForm.value.description!,
       price: this.productForm.value.price!,
       image_url: this.productForm.value.image_url!,
+      category: this.productForm.value.category!
     };
 
-    this.productService.addProduct(newProductData).subscribe({
+    this.productService.addProduct(newProductData as Product).subscribe({
       next: () => {
         alert('Product added successfully!');
         this.productForm.reset();

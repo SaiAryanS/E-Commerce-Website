@@ -18,8 +18,6 @@ import { Observable, map } from 'rxjs';
         <h1>{{ product.name }}</h1>
         <p class="price">{{ product.price | currency }}</p>
         <p class="description">{{ product.description }}</p>
-        <h3>What's Included:</h3>
-        <p class="items">{{ product.items_included }}</p>
         <button class="btn-primary" (click)="addToCart(product)">Add to Cart</button>
       </div>
     </div>
