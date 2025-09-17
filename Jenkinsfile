@@ -6,38 +6,51 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Backend Dependencies') {
-            steps {
-                dir('backend') {
-                    bat 'npm install'
+        stage('Quality Gates') {
+            parallel {
+                stage('Frontend') {
+                    agent any
+                    steps {
+                        dir('frontend') {
+                            echo '--- Installing Frontend Dependencies ---'
+                            bat 'npm install'
+                            echo '--- Linting Frontend ---'
+                            // Assuming 'lint' script is in package.json.
+                            bat 'npm run lint' 
+                            echo '--- Running Frontend Tests ---'
+                            bat 'npm test -- --no-watch --browsers=ChromeHeadless'
+                            echo '--- Auditing Frontend Dependencies for Security ---'
+                            // Fails the build if high or critical severity vulnerabilities are found
+                            bat 'npm audit --audit-level=high'
+                        }
+                    }
+                }
+                stage('Backend') {
+                    agent any
+                    steps {
+                        dir('backend') {
+                            echo '--- Installing Backend Dependencies ---'
+                            bat 'npm install'
+                            echo '--- Linting Backend ---'
+                            echo 'Skipping backend linting. To enable, add a "lint" script to backend/package.json and uncomment the line below.'
+                            // bat 'npm run lint'
+                            
+                            echo '--- Running Backend Tests ---'
+                            echo 'Skipping backend tests. To enable, configure your tests and use the command below.'
+                            // bat 'npm test'
+
+                            echo '--- Auditing Backend Dependencies for Security ---'
+                            // Fails the build if high or critical severity vulnerabilities are found
+                            bat 'npm audit --audit-level=high'
+                        }
+                    }
                 }
             }
         }
-        stage('Frontend Dependencies') {
+        stage('Build Artifacts') {
             steps {
                 dir('frontend') {
-                    bat 'npm install'
-                }
-            }
-        }
-        stage('Frontend Tests') {
-            steps {
-                dir('frontend') {
-                    bat 'npm test -- --no-watch --browsers=ChromeHeadless' // Run tests in headless mode
-                }
-            }
-        }
-        stage('Backend Tests (Placeholder)') {
-            steps {
-                dir('backend') {
-                    echo 'No backend tests configured yet. Add your test command here (e.g., npm test).'
-                    // sh 'npm test' // Uncomment and configure when backend tests are ready
-                }
-            }
-        }
-        stage('Frontend Build') {
-            steps {
-                dir('frontend') {
+                    echo '--- Building Frontend Application for Production ---'
                     bat 'npm run build -- --configuration=production' // Build for production
                 }
             }
