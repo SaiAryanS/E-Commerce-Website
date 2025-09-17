@@ -8,6 +8,6 @@ RUN npm run build -- --configuration=production
 
 # Stage 2: Serve the application from Nginx
 FROM nginx:alpine
-COPY --from=build /usr/src/app/dist/frontend /usr/share/nginx/html
+COPY --from=build /usr/src/app/dist/frontend/ /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
