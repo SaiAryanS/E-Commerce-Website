@@ -94,16 +94,18 @@ pipeline {
             agent any
             steps {
                 script {
-                    echo '--- Deploying Application to Minikube ---'
-                    
-                    // Apply the Kubernetes manifests
-                    bat 'kubectl apply -f mysql-deployment.yaml'
-                    bat 'kubectl apply -f backend-deployment.yaml'
-                    bat 'kubectl apply -f frontend-deployment.yaml'
+                    withEnv(['KUBECONFIG=C:\\Users\\aryan\\.kube\\config']) {
+                        echo '--- Deploying Application to Minikube ---'
+                        
+                        // Apply the Kubernetes manifests
+                        bat 'kubectl apply -f mysql-deployment.yaml'
+                        bat 'kubectl apply -f backend-deployment.yaml'
+                        bat 'kubectl apply -f frontend-deployment.yaml'
 
-                    // Update the image for the deployments to the one just built
-                    bat "kubectl set image deployment/backend-deployment backend=saiaryansoma/e-commerce-backend:${env.GIT_COMMIT}"
-                    bat "kubectl set image deployment/frontend-deployment frontend=saiaryansoma/e-commerce-frontend:${env.GIT_COMMIT}"
+                        // Update the image for the deployments to the one just built
+                        bat "kubectl set image deployment/backend-deployment backend=saiaryansoma/e-commerce-backend:${env.GIT_COMMIT}"
+                        bat "kubectl set image deployment/frontend-deployment frontend=saiaryansoma/e-commerce-frontend:${env.GIT_COMMIT}"
+                    }
                 }
             }
         }
