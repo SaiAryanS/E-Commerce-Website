@@ -15,8 +15,8 @@ pipeline {
                             echo '--- Installing Frontend Dependencies ---'
                             bat 'npm install'
                             echo '--- Linting Frontend ---'
-                            echo 'Skipping frontend linting. The "lint" script is missing in frontend/package.json.'
                             // To enable, configure a linter (e.g., ng add @angular-eslint/schematics) and uncomment the line below.
+                            // The 'lint' script is missing in frontend/package.json.
                             // bat 'npm run lint'
                             echo '--- Running Frontend Tests ---'
                             bat 'npm test -- --no-watch --browsers=ChromeHeadless'
