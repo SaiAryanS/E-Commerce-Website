@@ -21,6 +21,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes); // This line is crucial!
 
+// --- Health Check Endpoint ---
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // --- Basic Error Handling ---
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -36,4 +41,3 @@ createTables().then(() => {
     console.log(`Server is running on port ${PORT}`);
   });
 });
-
