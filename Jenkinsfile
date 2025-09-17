@@ -48,6 +48,48 @@ pipeline {
                 }
             }
         }
+        stage('Build & Push Docker Images') {
+            parallel {
+                stage('Frontend Image') {
+                    agent any
+                    steps {
+                        dir('frontend') {
+                            script {
+                                echo '--- Building and Pushing Frontend Docker Image ---'
+                                def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                                // Use your Docker Hub username
+                                def imageName = "saiaryansoma/e-commerce-frontend:${gitCommit}"
+                                
+                                bat "docker build -t \"${imageName}\" -f Dockerfile ."
+                                withCredentials([usernamePassword(credentialsId: '4bd3531a-cd7e-4df2-bbb6-18d9c051b60c', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                                    bat "docker push \"${imageName}\""
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Backend Image') {
+                    agent any
+                    steps {
+                        dir('backend') {
+                            script {
+                                echo '--- Building and Pushing Backend Docker Image ---'
+                                def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                                // Use your Docker Hub username
+                                def imageName = "saiaryansoma/e-commerce-backend:${gitCommit}"
+
+                                bat "docker build -t \"${imageName}\" -f Dockerfile ."
+                                withCredentials([usernamePassword(credentialsId: '4bd3531a-cd7e-4df2-bbb6-18d9c051b60c', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                                    bat "docker push \"${imageName}\""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     post {
         always {
