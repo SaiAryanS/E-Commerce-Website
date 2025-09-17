@@ -9,14 +9,14 @@ pipeline {
         stage('Backend Dependencies') {
             steps {
                 dir('backend') {
-                    sh 'npm install'
+                    bat 'npm install'
                 }
             }
         }
         stage('Frontend Dependencies') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    bat 'npm install'
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
         stage('Frontend Build') {
             steps {
                 dir('frontend') {
-                    sh 'npm run build -- --configuration=production' // Build for production
+                    bat 'npm run build -- --configuration=production' // Build for production
                 }
             }
         }
