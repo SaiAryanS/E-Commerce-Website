@@ -23,7 +23,7 @@ pipeline {
         stage('Frontend Tests') {
             steps {
                 dir('frontend') {
-                    sh 'npm test -- --no-watch --browsers=ChromeHeadless' // Run tests in headless mode
+                    bat 'npm test -- --no-watch --browsers=ChromeHeadless' // Run tests in headless mode
                 }
             }
         }
