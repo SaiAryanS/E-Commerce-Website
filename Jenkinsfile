@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:18-alpine' // Using a Node.js image for both frontend and backend
-            args '-u 0:0' // To avoid permission issues in some Docker environments
-        }
-    }
+    agent any
     stages {
         stage('Checkout') {
             steps {
