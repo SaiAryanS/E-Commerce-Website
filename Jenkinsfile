@@ -48,48 +48,6 @@ pipeline {
                 }
             }
         }
-        stage('Build & Push Docker Images') {
-            parallel {
-                stage('Frontend Image') {
-                    agent any
-                    steps {
-                        dir('frontend') {
-                            script {
-                                echo '--- Building and Pushing Frontend Docker Image ---'
-                                def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                                // Replace 'saiaryans' with your Docker Hub username
-                                def imageName = "saiaryans/e-commerce-frontend:${gitCommit}"
-                                
-                                bat "docker build -t ${imageName} -f Dockerfile ."
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
-                                    bat "docker push ${imageName}"
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Backend Image') {
-                    agent any
-                    steps {
-                        dir('backend') {
-                            script {
-                                echo '--- Building and Pushing Backend Docker Image ---'
-                                def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                                // Replace 'saiaryans' with your Docker Hub username
-                                def imageName = "saiaryans/e-commerce-backend:${gitCommit}"
-
-                                bat "docker build -t ${imageName} -f Dockerfile ."
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
-                                    bat "docker push ${imageName}"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
         stage('E2E Tests') {
             agent any
             steps {
