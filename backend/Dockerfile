@@ -5,10 +5,10 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
+COPY package*.json ./ 
 
-# Install any needed packages
-RUN npm install
+# Install production dependencies
+RUN npm ci --only=production
 
 # Bundle app source
 COPY . .

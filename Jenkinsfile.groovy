@@ -48,11 +48,72 @@ pipeline {
                 }
             }
         }
-        stage('Build Artifacts') {
+        stage('Build & Push Docker Images') {
+            parallel {
+                stage('Frontend Image') {
+                    agent any
+                    steps {
+                        dir('frontend') {
+                            script {
+                                echo '--- Building and Pushing Frontend Docker Image ---'
+                                def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                                // Replace 'saiaryans' with your Docker Hub username
+                                def imageName = "saiaryans/e-commerce-frontend:${gitCommit}"
+                                
+                                bat "docker build -t ${imageName} -f Dockerfile ."
+                                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                                    bat "docker push ${imageName}"
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Backend Image') {
+                    agent any
+                    steps {
+                        dir('backend') {
+                            script {
+                                echo '--- Building and Pushing Backend Docker Image ---'
+                                def gitCommit = bat(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                                // Replace 'saiaryans' with your Docker Hub username
+                                def imageName = "saiaryans/e-commerce-backend:${gitCommit}"
+
+                                bat "docker build -t ${imageName} -f Dockerfile ."
+                                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                                    bat "docker push ${imageName}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('E2E Tests') {
+            agent any
             steps {
-                dir('frontend') {
-                    echo '--- Building Frontend Application for Production ---'
-                    bat 'npm run build -- --configuration=production' // Build for production
+                script {
+                    // A try-finally block is crucial to ensure the environment is always torn down, even if tests fail.
+                    try {
+                        echo '--- Starting application stack with Docker Compose ---'
+                        // The '-d' runs it in detached mode. '--build' ensures fresh images are used.
+                        bat 'docker-compose up -d --build'
+
+                        echo '--- Waiting for services to become healthy ---'
+                        // Poll the frontend service until it returns a successful status code.
+                        // The --retry options make this a robust way to wait, replacing a brittle 'sleep'.
+                        bat 'curl --retry 20 --retry-delay 5 --retry-connrefused -f http://localhost'
+
+                        echo '--- Running Cypress E2E Tests ---'
+                        // Run the Cypress tests headlessly from the frontend directory.
+                        dir('frontend') {
+                            bat 'npm run e2e'
+                        }
+                    } finally {
+                        echo '--- Tearing down application stack ---'
+                        bat 'docker-compose down'
+                    }
                 }
             }
         }
