@@ -17,7 +17,7 @@ pipeline {
                             echo '--- Linting Frontend ---'
                             // To enable, configure a linter (e.g., ng add @angular-eslint/schematics) and uncomment the line below.
                             // The 'lint' script is missing in frontend/package.json.
-                            // bat 'npm run lint'
+                            // bat 'npm run lint' // This line was causing the error. Ensure it is commented out.
                             echo '--- Running Frontend Tests ---'
                             bat 'npm test -- --no-watch --browsers=ChromeHeadless'
                             echo '--- Auditing Frontend Dependencies for Security ---'
