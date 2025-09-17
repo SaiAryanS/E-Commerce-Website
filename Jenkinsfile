@@ -97,9 +97,9 @@ pipeline {
                     echo '--- Deploying Application to Minikube ---'
                     
                     // Apply the Kubernetes manifests
-                    bat 'kubectl apply -f k8s/mysql-deployment.yaml'
-                    bat 'kubectl apply -f k8s/backend-deployment.yaml'
-                    bat 'kubectl apply -f k8s/frontend-deployment.yaml'
+                    bat 'kubectl apply -f mysql-deployment.yaml'
+                    bat 'kubectl apply -f backend-deployment.yaml'
+                    bat 'kubectl apply -f frontend-deployment.yaml'
 
                     // Update the image for the deployments to the one just built
                     bat "kubectl set image deployment/backend-deployment backend=saiaryansoma/e-commerce-backend:${env.GIT_COMMIT}"
