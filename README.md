@@ -96,7 +96,7 @@ A minimalist website named "The Home Office Kit" that sells curated, themed boxe
     ```
     The API will be running at `http://localhost:3000`.
 
-### 3. Frontend Setup
+### 3. Frontend Setup For the Page
 
 1.  Navigate to the `frontend` directory:
     ```bash
