@@ -101,8 +101,16 @@ pipeline {
                         bat 'docker-compose down --volumes --remove-orphans'
 
                         echo "--- Forcefully removing conflicting containers ---"
-                        bat 'docker stop mysql_db || true'
-                        bat 'docker rm mysql_db || true'
+                        // This block will TRY to stop and remove the container.
+                        // If the commands fail (because the container isn't there),
+                        // it will CATCH the error and simply print a message
+                        // instead of failing the pipeline.
+                        try {
+                            bat 'docker stop mysql_db'
+                            bat 'docker rm mysql_db'
+                        } catch (any) {
+                            echo "Container 'mysql_db' did not exist or was already stopped. That's OK."
+                        }
 
 
                         echo '--- Starting application stack with Docker Compose ---'
