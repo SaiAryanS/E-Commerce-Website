@@ -100,6 +100,11 @@ pipeline {
                         // Bring down any existing containers and remove volumes to ensure a fresh start
                         bat 'docker-compose down --volumes --remove-orphans'
 
+                        echo "--- Forcefully removing conflicting containers ---"
+                        bat 'docker stop mysql_db || true'
+                        bat 'docker rm mysql_db || true'
+
+
                         echo '--- Starting application stack with Docker Compose ---'
                         // The '-d' runs it in detached mode. '--build' ensures fresh images are used.
                         bat 'docker-compose up -d --build'
