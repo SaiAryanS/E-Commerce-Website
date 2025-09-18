@@ -8,14 +8,17 @@ describe('Ordering Process', () => {
   });
 
   beforeEach(() => {
-    // Programmatically logs in once and reuses the session for speed and reliability
+    // Programmatically logs in and restores the session for speed
     cy.session(user.email, () => {
+      // Register a new user for a clean test
       cy.visit('/register');
       cy.get('input[formControlName="email"]').type(user.email);
       cy.get('input[formControlName="password"]').type(user.password);
       cy.get('input[formControlName="confirmPassword"]').type(user.password);
       cy.get('button[type="submit"]').click();
+      cy.url().should('include', '/login');
 
+      // Log in with the new user
       cy.visit('/login');
       cy.get('input[formControlName="email"]').type(user.email);
       cy.get('input[formControlName="password"]').type(user.password);
@@ -28,38 +31,33 @@ describe('Ordering Process', () => {
     // Step 1: Start on the homepage
     cy.visit('/');
 
-    // Step 2: From the homepage, click on the first category card
-    // This selector is taken directly from your HomePageComponent code
+    // Step 2: Click on the first category card
     cy.get('.category-card').first().click();
-    cy.url().should('include', '/products/category'); // Verify navigation to category page
+    cy.url().should('include', '/products/category');
 
     // Step 3: On the category page, click on the first product
-    // ACTION: You may need to update '.product-card' to your product item selector
+    // ACTION: Confirm '.product-card' is the correct selector
     cy.get('.product-card').first().click();
-    cy.url().should('include', '/product/'); // Verify navigation to a product detail page
+    cy.url().should('include', '/product/');
 
-    // Step 4: On the product detail page, add the item to the cart
+    // Step 4: Add the item to the cart
     cy.contains('button', 'Add to Cart').click();
 
-    // Step 5: Click the cart icon, then proceed to checkout
-    // ACTION: You may need to update '.cart-icon'
+    // Step 5: Go to the shopping cart page
+    // ACTION: Confirm '.cart-icon' is the correct selector
     cy.get('.cart-icon').click();
-    cy.contains('a', 'Proceed to Checkout').click(); // Uses the exact text you described
+    cy.url().should('include', '/cart');
+
+    // Step 6: On the cart page, click "Proceed to Checkout"
+    // This now looks for a button as seen in your screenshot
+    cy.contains('button', 'Proceed to Checkout').click();
     cy.url().should('include', '/checkout');
 
-    // Step 6: Fill in the checkout form
-    // ACTION: Update these selectors to match your checkout form
-    cy.get('input[formControlName="fullName"]').type('Test Customer');
-    cy.get('input[formControlName="addressLine1"]').type('123 Test St');
-    cy.get('input[formControlName="city"]').type('Testville');
-    cy.get('input[formControlName="zipCode"]').type('12345');
-
-    // Step 7: Place the order
+    // Step 7: On the Checkout Summary page, click "Place Order"
     cy.contains('button', 'Place Order').click();
 
-    // Step 8: Verify the order confirmation page
-    // This looks for the exact text you described on the final page
-    cy.contains('h1', 'Thank You For Your Order').should('be.visible');
-    cy.contains('a', 'Continue Shopping').should('be.visible');
+    // Step 8: Verify the final order confirmation page
+    cy.contains('h1', 'Thank You For Your Order!').should('be.visible');
+    cy.contains('button', 'Continue Shopping').should('be.visible');
   });
 });
