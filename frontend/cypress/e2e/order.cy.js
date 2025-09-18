@@ -50,7 +50,7 @@ describe('Ordering Process', () => {
 
     // Step 6: On the cart page, click "Proceed to Checkout"
     // This now looks for a button as seen in your screenshot
-    cy.contains('button', 'Proceed to Checkout').click();
+    cy.contains('Proceed to Checkout').click();
     cy.url().should('include', '/checkout');
 
     // Step 7: On the Checkout Summary page, click "Place Order"
