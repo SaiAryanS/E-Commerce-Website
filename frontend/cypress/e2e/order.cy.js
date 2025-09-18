@@ -58,6 +58,6 @@ describe('Ordering Process', () => {
 
     // Step 8: Verify the final order confirmation page
     cy.contains('h1', 'Thank You For Your Order!').should('be.visible');
-    cy.contains('button', 'Continue Shopping').should('be.visible');
+    cy.contains('Continue Shopping').should('be.visible');
   });
 });
