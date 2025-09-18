@@ -36,7 +36,7 @@ describe('Ordering Process', () => {
     // Step 3: On the category page, click on the first product
     // ACTION: You may need to update '.product-card' to your product item selector
     cy.get('.product-card').first().click();
-    cy.url().should('include', '/products/'); // Verify navigation to a product detail page
+    cy.url().should('include', '/product/'); // Verify navigation to a product detail page
 
     // Step 4: On the product detail page, add the item to the cart
     cy.contains('button', 'Add to Cart').click();
