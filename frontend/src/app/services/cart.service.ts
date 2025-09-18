@@ -28,7 +28,11 @@ export class CartService {
   );
 
   constructor() {
-    // Optional: Load cart from localStorage if you want it to persist
+    // Load cart from localStorage on service initialization
+    const savedCart = localStorage.getItem('cartItems');
+    if (savedCart) {
+      this._cartItems.next(JSON.parse(savedCart));
+    }
   }
 
   // Adds a product to the cart or increments its quantity
@@ -41,14 +45,14 @@ export class CartService {
     } else {
       currentItems.push({ product: product, quantity: 1 });
     }
-    this._cartItems.next([...currentItems]); // Emit a new array to trigger change detection
+    this.updateCart(currentItems);
   }
 
   // Removes an item completely from the cart
   removeFromCart(productId: number): void {
     const currentItems = this._cartItems.getValue();
     const updatedItems = currentItems.filter(item => item.product.id !== productId);
-    this._cartItems.next(updatedItems);
+    this.updateCart(updatedItems);
   }
 
   // Updates the quantity of a specific item
@@ -62,12 +66,17 @@ export class CartService {
     if (itemToUpdate) {
       itemToUpdate.quantity = newQuantity;
     }
-    this._cartItems.next([...currentItems]);
+    this.updateCart(currentItems);
   }
 
   // Empties the entire cart
   clearCart(): void {
-    this._cartItems.next([]);
+    this.updateCart([]);
+  }
+
+  // Helper function to update the BehaviorSubject and save to localStorage
+  private updateCart(items: CartItem[]): void {
+    this._cartItems.next(items);
+    localStorage.setItem('cartItems', JSON.stringify(items));
   }
 }
-
