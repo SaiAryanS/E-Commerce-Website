@@ -17,7 +17,7 @@ pipeline {
                             echo '--- Linting Frontend ---'
                             // To enable, configure a linter (e.g., ng add @angular-eslint/schematics) and uncomment the line below.
                             // The 'lint' script is missing in frontend/package.json.
-                            // bat 'npm run lint' // This line was causing the error. Ensure it is commented out.
+                            // bat 'npm run lint'
                             echo '--- Running Frontend Tests ---'
                             bat 'npm test -- --no-watch --browsers=ChromeHeadless'
                             echo '--- Auditing Frontend Dependencies for Security ---'
@@ -94,40 +94,33 @@ pipeline {
             agent any
             steps {
                 script {
-                    // A try-finally block is crucial to ensure the environment is always torn down, even if tests fail.
+                    echo '--- Ensuring clean Docker Compose environment ---'
+                    // Bring down any existing containers and remove volumes to ensure a fresh start
+                    bat 'docker-compose down --volumes --remove-orphans'
+
+                    echo "--- Forcefully removing conflicting containers ---"
+                    // This block safely stops and removes the container if it exists,
+                    // preventing errors if it doesn't.
                     try {
-                        echo '--- Ensuring clean Docker Compose environment ---'
-                        // Bring down any existing containers and remove volumes to ensure a fresh start
-                        bat 'docker-compose down --volumes --remove-orphans'
+                        bat 'docker stop mysql_db'
+                        bat 'docker rm mysql_db'
+                    } catch (any) {
+                        echo "Container 'mysql_db' did not exist or was already stopped. That's OK."
+                    }
 
-                        echo "--- Forcefully removing conflicting containers ---"
-                        // This block will TRY to stop and remove the container.
-                        // If the commands fail (because the container isn't there),
-                        // it will CATCH the error and simply print a message
-                        // instead of failing the pipeline.
-                        try {
-                            bat 'docker stop mysql_db'
-                            bat 'docker rm mysql_db'
-                        } catch (any) {
-                            echo "Container 'mysql_db' did not exist or was already stopped. That's OK."
-                        }
+                    echo '--- Starting application stack with Docker Compose ---'
+                    // The '-d' runs it in detached mode. '--build' ensures fresh images are used.
+                    bat 'docker-compose up -d --build'
 
+                    echo '--- Waiting for services to become healthy ---'
+                    // Poll the frontend service until it returns a successful status code.
+                    bat 'curl --retry 20 --retry-delay 5 --retry-connrefused -f http://localhost'
 
-                        echo '--- Starting application stack with Docker Compose ---'
-                        // The '-d' runs it in detached mode. '--build' ensures fresh images are used.
-                        bat 'docker-compose up -d --build'
-
-                        echo '--- Waiting for services to become healthy ---'
-                        // Poll the frontend service until it returns a successful status code.
-                        // This is much more reliable than a fixed sleep time.
-                        bat 'curl --retry 20 --retry-delay 5 --retry-connrefused -f http://localhost'
-
-                        echo '--- Running All Cypress E2E Tests ---'
-                        // Run the Cypress tests headlessly from the frontend directory.
-                        dir('frontend') {
-                            bat 'npm run e2e'
-                        }
-                    } 
+                    echo '--- Running All Cypress E2E Tests ---'
+                    // Run the Cypress tests headlessly from the frontend directory.
+                    dir('frontend') {
+                        bat 'npm run e2e'
+                    }
                 }
             }
         }
