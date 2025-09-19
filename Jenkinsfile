@@ -127,10 +127,7 @@ pipeline {
                         dir('frontend') {
                             bat 'npm run e2e'
                         }
-                    } finally {
-                        echo '--- Tearing down application stack ---'
-                        bat 'docker-compose down'
-                    }
+                    } 
                 }
             }
         }
